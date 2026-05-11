@@ -445,13 +445,131 @@ async function handleImageFile(file) {
     } catch { showToast('Upload failed.', 'error'); }
 }
 
+/* ── Client-Side Form Validation (Member 7) ──────────────────── */
+function validateRecipeForm(form) {
+    let isValid = true;
+
+    // Helper: clear previous errors
+    function clearError(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.classList.remove('input-error');
+        const existing = input.parentNode.querySelector('.field-error');
+        if (existing) existing.remove();
+    }
+
+    // Helper: show error under a field
+    function showError(inputId, message) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.classList.add('input-error');
+        // Don't add duplicate errors
+        if (!input.parentNode.querySelector('.field-error')) {
+            const err = document.createElement('span');
+            err.className = 'field-error';
+            err.textContent = message;
+            input.parentNode.appendChild(err);
+        }
+        isValid = false;
+    }
+
+    // Clear all previous errors first
+    ['recipeTitle', 'recipeDesc', 'recipeIngredients',
+     'recipeInstructions', 'recipeCalories', 'recipeProtein',
+     'recipeCarbs', 'recipeFats'].forEach(clearError);
+
+    // ── Rule 1: Title is required, min 3 chars, max 100 chars
+    const title = document.getElementById('recipeTitle');
+    if (!title) return false;
+    const titleVal = title.value.trim();
+    if (!titleVal) {
+        showError('recipeTitle', 'Recipe title is required.');
+    } else if (titleVal.length < 3) {
+        showError('recipeTitle', 'Title must be at least 3 characters.');
+    } else if (titleVal.length > 100) {
+        showError('recipeTitle', 'Title must not exceed 100 characters.');
+    }
+
+    // ── Rule 2: Description max 500 chars (optional but if filled)
+    const desc = document.getElementById('recipeDesc');
+    if (desc && desc.value.trim().length > 500) {
+        showError('recipeDesc', 'Description must not exceed 500 characters.');
+    }
+
+    // ── Rule 3: Ingredients max 2000 chars (optional but if filled)
+    const ingredients = document.getElementById('recipeIngredients');
+    if (ingredients && ingredients.value.trim().length > 2000) {
+        showError('recipeIngredients', 'Ingredients must not exceed 2000 characters.');
+    }
+
+    // ── Rule 4: Instructions max 5000 chars (optional but if filled)
+    const instructions = document.getElementById('recipeInstructions');
+    if (instructions && instructions.value.trim().length > 5000) {
+        showError('recipeInstructions', 'Instructions must not exceed 5000 characters.');
+    }
+
+    // ── Rule 5: Nutrition fields — must be non-negative numbers if filled
+    const numericFields = [
+        { name: 'calories', label: 'Calories', max: 10000 },
+        { name: 'protein',  label: 'Protein',  max: 1000  },
+        { name: 'carbs',    label: 'Carbs',    max: 1000  },
+        { name: 'fats',     label: 'Fats',     max: 1000  },
+    ];
+
+    numericFields.forEach(field => {
+        // The macro inputs don't have IDs in the current form, so we find by name
+        const input = form.elements[field.name];
+        if (!input) return;
+        const val = input.value.trim();
+        if (val === '') return; // optional — skip if empty
+
+        const num = parseFloat(val);
+        if (isNaN(num)) {
+            // Add error directly since no ID — add class manually
+            input.classList.add('input-error');
+            if (!input.parentNode.querySelector('.field-error')) {
+                const err = document.createElement('span');
+                err.className = 'field-error';
+                err.textContent = `${field.label} must be a valid number.`;
+                input.parentNode.appendChild(err);
+            }
+            isValid = false;
+        } else if (num < 0) {
+            input.classList.add('input-error');
+            if (!input.parentNode.querySelector('.field-error')) {
+                const err = document.createElement('span');
+                err.className = 'field-error';
+                err.textContent = `${field.label} cannot be negative.`;
+                input.parentNode.appendChild(err);
+            }
+            isValid = false;
+        } else if (num > field.max) {
+            input.classList.add('input-error');
+            if (!input.parentNode.querySelector('.field-error')) {
+                const err = document.createElement('span');
+                err.className = 'field-error';
+                err.textContent = `${field.label} seems too high (max ${field.max}).`;
+                input.parentNode.appendChild(err);
+            }
+            isValid = false;
+        }
+    });
+
+    return isValid;
+}
+
+
 /* ── Recipe Form Submit ───────────────────────────────────────── */
 async function handleRecipeSubmit(e) {
     e.preventDefault();
     const form = e.target;
     const btn = document.getElementById('submitBtn');
-    const title = form.elements['title'].value.trim();
-    if (!title) { showToast('Please enter a recipe title.', 'error'); return; }
+
+    // ── Run client-side validation first
+    if (!validateRecipeForm(form)) {
+        showToast('Please fix the errors below.', 'error');
+        return; // stop here — don't submit
+    }
 
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner"></span>&nbsp;Saving…`;
@@ -491,6 +609,8 @@ async function handleRecipeSubmit(e) {
     }
 }
 
+
+
 /* ══════════════════════════════════════════════════════════════
    API SEARCH WITH PAGINATION
 ══════════════════════════════════════════════════════════════ */
@@ -501,7 +621,16 @@ async function doApiSearch(page = 1) {
     const query = (page === 1 ? input?.value?.trim() : State.lastQuery) || '';
     const mode = (page === 1 ? modeEl?.value : State.lastMode) || 'name';
 
-    if (!query) { showToast('Please enter a search term.', 'info'); return; }
+    if (!query) {
+        const input = document.getElementById('apiSearchInput');
+        if (input) {
+            input.classList.add('input-error');
+            input.focus();
+            setTimeout(() => input.classList.remove('input-error'), 2000);
+        }
+        showToast('Please enter a search term.', 'info');
+        return;
+    }
 
     // Persist for page changes
     State.lastQuery = query;
