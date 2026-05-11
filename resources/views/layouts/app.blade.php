@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{-- Required for AJAX requests to Laravel --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="ChefMaster — Intelligent Recipe Management & Discovery Platform">
     <title>ChefMaster — Culinary Platform</title>
 

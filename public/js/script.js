@@ -82,13 +82,29 @@ function showToast(message, type = 'success') {
     }, 3500);
 }
 
-/* ── DB fetch ────────────────────────────────────────────────── */
-async function dbPost(formData) {
-    const res = await fetch('DB_Ops.php', { method: 'POST', body: formData });
-    // Allow 409 (conflict/duplicate) to pass through as JSON
-    if (!res.ok && res.status !== 409) throw new Error(`HTTP ${res.status}`);
+/* ── DB fetch — updated for Laravel routes (M7) ─────────────── */
+async function dbPost(formData, url = null) {
+    // URL will be set once M3 defines routes
+    // Default placeholder — replace '/api/recipes' with actual route from M3
+    const endpoint = url || '/api/recipes';
+
+    const res = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            'Accept': 'application/json',
+        }
+    });
+
+    // Allow 409 (duplicate) and 422 (Laravel validation error) through as JSON
+    if (!res.ok && res.status !== 409 && res.status !== 422) {
+        throw new Error(`HTTP ${res.status}`);
+    }
+
     return res.json();
 }
+
 
 /* ── Scroll helper ───────────────────────────────────────────── */
 function scrollToSection(id) {
@@ -609,7 +625,67 @@ async function handleRecipeSubmit(e) {
     }
 }
 
+/* ── Handle Laravel validation error responses (M7) ─────────── */
+function handleLaravelErrors(responseData) {
+    // Laravel returns errors in this format:
+    // { "errors": { "title": ["The title field is required."], "calories": ["..."] } }
+    // OR { "message": "Some error" }
 
+    if (!responseData) return false;
+
+    // Single message error (non-validation)
+    if (responseData.message && !responseData.errors) {
+        showToast(responseData.message, 'error');
+        return true;
+    }
+
+    // Field-level validation errors from Laravel
+    if (responseData.errors) {
+        // Map Laravel field names to our input IDs
+        const fieldMap = {
+            'title':        'recipeTitle',
+            'description':  'recipeDesc',
+            'ingredients':  'recipeIngredients',
+            'instructions': 'recipeInstructions',
+        };
+
+        let firstField = null;
+
+        Object.entries(responseData.errors).forEach(([field, messages]) => {
+            const inputId = fieldMap[field];
+            const input = inputId
+                ? document.getElementById(inputId)
+                : document.querySelector(`[name="${field}"]`);
+
+            if (input) {
+                // Highlight field
+                input.classList.add('input-error');
+
+                // Show error message under field
+                if (!input.parentNode.querySelector('.field-error')) {
+                    const err = document.createElement('span');
+                    err.className = 'field-error';
+                    err.textContent = messages[0]; // show first error message
+                    input.parentNode.appendChild(err);
+                }
+
+                // Remember first error field to scroll to it
+                if (!firstField) firstField = input;
+            }
+        });
+
+        // Scroll to first error field so user sees it
+        if (firstField) {
+            firstField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstField.focus();
+        }
+
+        showToast('Please fix the errors below.', 'error');
+        return true; // errors were handled
+    }
+
+    return false; // no errors found
+}
 
 /* ══════════════════════════════════════════════════════════════
    API SEARCH WITH PAGINATION
