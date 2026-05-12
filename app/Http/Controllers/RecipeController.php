@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreRecipeRequest;
+use App\Http\Requests\UpdateRecipeRequest;
 
 class RecipeController extends Controller
 {
@@ -29,28 +31,17 @@ class RecipeController extends Controller
     /**
      * Store a newly created recipe in the database.
      * Route: POST /recipes
+     * T5 (M5): Validation handled by StoreRecipeRequest Form Request.
      */
-    public function store(Request $request)
+    public function store(StoreRecipeRequest $request)
     {
-        // Validation will be handled by M5 (T5) via Form Request
-        // Basic inline validation as placeholder until T5 is merged
-        $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'ingredients'  => 'required|string',
-            'instructions' => 'required|string',
-            'description'  => 'nullable|string',
-            'calories'     => 'nullable|numeric|min:0',
-            'protein'      => 'nullable|numeric|min:0',
-            'carbs'        => 'nullable|numeric|min:0',
-            'fats'         => 'nullable|numeric|min:0',
-            'image_path'   => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         // Set defaults for nullable numeric fields
-        $validated['calories'] = $validated['calories'] ?? 0;
-        $validated['protein']  = $validated['protein']  ?? 0;
-        $validated['carbs']    = $validated['carbs']    ?? 0;
-        $validated['fats']     = $validated['fats']     ?? 0;
+        $validated['calories']    = $validated['calories']    ?? 0;
+        $validated['protein']     = $validated['protein']     ?? 0;
+        $validated['carbs']       = $validated['carbs']       ?? 0;
+        $validated['fats']        = $validated['fats']        ?? 0;
 
         // source_type defaults to 'manual' for user-created recipes
         $validated['source_type'] = 'manual';
@@ -97,22 +88,11 @@ class RecipeController extends Controller
     /**
      * Update the specified recipe in the database.
      * Route: PUT /recipes/{recipe}
+     * T5 (M5): Validation handled by UpdateRecipeRequest Form Request.
      */
-    public function update(Request $request, Recipe $recipe)
+    public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
-        // Validation will be enhanced by M5 (T5) — placeholder rules here
-        $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'ingredients'  => 'required|string',
-            'instructions' => 'required|string',
-            'description'  => 'nullable|string',
-            'calories'     => 'nullable|numeric|min:0',
-            'protein'      => 'nullable|numeric|min:0',
-            'carbs'        => 'nullable|numeric|min:0',
-            'fats'         => 'nullable|numeric|min:0',
-            'image_path'   => 'nullable|string|max:500',
-        ]);
-
+        $validated = $request->validated();
         $recipe->update($validated);
 
         if ($request->wantsJson() || $request->ajax()) {
@@ -141,6 +121,7 @@ class RecipeController extends Controller
         }
         return redirect()->route('recipes.index')->with('success', 'Recipe deleted successfully!');
     }
+
     /**
      * Toggle the is_favorite status of a recipe.
      * Route: PATCH /recipes/{recipe}/favorite
@@ -150,7 +131,6 @@ class RecipeController extends Controller
     {
         $recipe->update(['is_favorite' => !$recipe->is_favorite]);
 
-        // Return JSON for AJAX calls
         return response()->json([
             'success'     => true,
             'is_favorite' => $recipe->is_favorite,

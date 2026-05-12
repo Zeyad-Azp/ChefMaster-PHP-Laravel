@@ -12,7 +12,7 @@
             <h2 class="section-title" style="margin-top:12px;">Edit Recipe</h2>
         </div>
 
-        {{-- Validation errors --}}
+        {{-- T5 (M5): Global validation error summary --}}
         @if($errors->any())
             <div style="background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c;padding:14px 18px;border-radius:10px;margin-bottom:20px;">
                 <strong>Please fix the following errors:</strong>
@@ -35,8 +35,7 @@
                     Recipe Title <span style="color:#e74c3c">*</span>
                 </label>
                 <input type="text" name="title" value="{{ old('title', $recipe->title) }}"
-                       style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;"
-                       required>
+                       style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid {{ $errors->has('title') ? '#e74c3c' : 'var(--border)' }};background:var(--bg);color:var(--text);font-size:0.95rem;">
                 @error('title')
                     <span style="color:#e74c3c;font-size:0.8rem;">{{ $message }}</span>
                 @enderror
@@ -46,7 +45,7 @@
             <div style="margin-bottom:20px;">
                 <label style="display:block;margin-bottom:6px;font-weight:600;font-size:0.9rem;">Description</label>
                 <textarea name="description" rows="3"
-                          style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;resize:vertical;">{{ old('description', $recipe->description) }}</textarea>
+                          style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid {{ $errors->has('description') ? '#e74c3c' : 'var(--border)' }};background:var(--bg);color:var(--text);font-size:0.95rem;resize:vertical;">{{ old('description', $recipe->description) }}</textarea>
                 @error('description')
                     <span style="color:#e74c3c;font-size:0.8rem;">{{ $message }}</span>
                 @enderror
@@ -58,8 +57,7 @@
                     Ingredients <span style="color:#e74c3c">*</span>
                 </label>
                 <textarea name="ingredients" rows="5"
-                          style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;resize:vertical;"
-                          required>{{ old('ingredients', $recipe->ingredients) }}</textarea>
+                          style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid {{ $errors->has('ingredients') ? '#e74c3c' : 'var(--border)' }};background:var(--bg);color:var(--text);font-size:0.95rem;resize:vertical;">{{ old('ingredients', $recipe->ingredients) }}</textarea>
                 @error('ingredients')
                     <span style="color:#e74c3c;font-size:0.8rem;">{{ $message }}</span>
                 @enderror
@@ -71,8 +69,7 @@
                     Instructions <span style="color:#e74c3c">*</span>
                 </label>
                 <textarea name="instructions" rows="6"
-                          style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;resize:vertical;"
-                          required>{{ old('instructions', $recipe->instructions) }}</textarea>
+                          style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid {{ $errors->has('instructions') ? '#e74c3c' : 'var(--border)' }};background:var(--bg);color:var(--text);font-size:0.95rem;resize:vertical;">{{ old('instructions', $recipe->instructions) }}</textarea>
                 @error('instructions')
                     <span style="color:#e74c3c;font-size:0.8rem;">{{ $message }}</span>
                 @enderror
@@ -86,7 +83,7 @@
                     <div>
                         <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:4px;">{{ $label }}</label>
                         <input type="number" name="{{ $field }}" value="{{ old($field, $recipe->$field) }}" min="0" step="0.1"
-                               style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);">
+                               style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid {{ $errors->has($field) ? '#e74c3c' : 'var(--border)' }};background:var(--bg);color:var(--text);">
                         @error($field)<span style="color:#e74c3c;font-size:0.75rem;">{{ $message }}</span>@enderror
                     </div>
                     @endforeach
@@ -98,7 +95,7 @@
                 <label style="display:block;margin-bottom:6px;font-weight:600;font-size:0.9rem;">Image URL (optional)</label>
                 <input type="text" name="image_path" value="{{ old('image_path', $recipe->image_path) }}"
                        placeholder="https://example.com/image.jpg"
-                       style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.95rem;">
+                       style="width:100%;padding:10px 14px;border-radius:8px;border:1px solid {{ $errors->has('image_path') ? '#e74c3c' : 'var(--border)' }};background:var(--bg);color:var(--text);font-size:0.95rem;">
                 @error('image_path')
                     <span style="color:#e74c3c;font-size:0.8rem;">{{ $message }}</span>
                 @enderror
