@@ -1086,15 +1086,16 @@ async function toggleFav(id) {
     try {
         const res = await dbPost(fd);
         if (res.success) {
-            // Update state
+            // Update just the is_favorite field in local state
             const idx = State.recipes.findIndex(r => r.id == id);
-            if (idx > -1) State.recipes[idx] = res.data;
-            else State.recipes.unshift(res.data);
+            if (idx > -1) {
+                State.recipes[idx].is_favorite = res.is_favorite ? 1 : 0;
+            }
 
-            const isFav = !!+res.data.is_favorite;
-            showToast(isFav ? 'Added to favourites.' : 'Removed from favourites.', 'success');
-            
-            // Update heart button color immediately in modal
+            const isFav = !!res.is_favorite;
+            showToast(res.message || (isFav ? 'Added to favourites.' : 'Removed from favourites.'), 'success');
+
+            // Update heart button immediately
             const heartBtn = document.querySelector(`button[onclick="toggleFav(${id})"]`);
             if (heartBtn) {
                 heartBtn.classList.toggle('active', isFav);
@@ -1103,7 +1104,9 @@ async function toggleFav(id) {
             updateRecipesView();
             updateFavoritesView();
         }
-    } catch { showToast('Failed to update favourite.', 'error'); }
+    } catch { 
+        showToast('Failed to update favourite.', 'error'); 
+    }
 }
 
 function editRecipe(id) {
