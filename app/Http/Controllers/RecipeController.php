@@ -56,13 +56,18 @@ class RecipeController extends Controller
         $validated['source_type'] = 'manual';
 
         // TODO: Replace with auth()->id() when authentication is added
-        $validated['user_id'] = 1;
+        $validated['user_id'] = null;
 
         $recipe = Recipe::create($validated);
 
-        return redirect()
-            ->route('recipes.show', $recipe)
-            ->with('success', 'Recipe created successfully!');
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Recipe created successfully!',
+                'data'    => $recipe,
+            ]);
+        }
+        return redirect()->route('recipes.show', $recipe)->with('success', 'Recipe created successfully!');
     }
 
     /**
@@ -71,6 +76,12 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'data'    => $recipe,
+            ]);
+        }
         return view('recipes.show', compact('recipe'));
     }
 
@@ -104,24 +115,32 @@ class RecipeController extends Controller
 
         $recipe->update($validated);
 
-        return redirect()
-            ->route('recipes.show', $recipe)
-            ->with('success', 'Recipe updated successfully!');
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Recipe updated successfully!',
+                'data'    => $recipe->fresh(),
+            ]);
+        }
+        return redirect()->route('recipes.show', $recipe)->with('success', 'Recipe updated successfully!');
     }
 
     /**
      * Remove the specified recipe from the database.
      * Route: DELETE /recipes/{recipe}
      */
-    public function destroy(Recipe $recipe)
+    public function destroy(Request $request, Recipe $recipe)
     {
         $recipe->delete();
 
-        return redirect()
-            ->route('recipes.index')
-            ->with('success', 'Recipe deleted successfully!');
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Recipe deleted successfully!',
+            ]);
+        }
+        return redirect()->route('recipes.index')->with('success', 'Recipe deleted successfully!');
     }
-
     /**
      * Toggle the is_favorite status of a recipe.
      * Route: PATCH /recipes/{recipe}/favorite
@@ -166,6 +185,20 @@ class RecipeController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $favorites,
+        ]);
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,webp|max:5120',
+        ]);
+
+        $path = $request->file('image')->store('uploads', 'public');
+
+        return response()->json([
+            'success'    => true,
+            'image_path' => '/storage/' . $path,
         ]);
     }
 }

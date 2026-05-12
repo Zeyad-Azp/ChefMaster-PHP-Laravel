@@ -84,27 +84,51 @@ function showToast(message, type = 'success') {
 
 /* ── DB fetch — updated for Laravel routes (M7) ─────────────── */
 async function dbPost(formData, url = null) {
-    // URL will be set once M3 defines routes
-    // Default placeholder — replace '/api/recipes' with actual route from M3
-    const endpoint = url || '/api/recipes';
+    const action = formData.get('action');
+    const id = formData.get('id');
+
+    // Map old DB_Ops.php actions to new Laravel routes
+    let endpoint = '/recipes';
+    let method = 'POST';
+
+    if (action === 'get_recipes') {
+        endpoint = '/recipes/api/list';
+        method = 'GET';
+    } else if (action === 'get_recipe') {
+        endpoint = `/recipes/${id}`;
+        method = 'GET';
+    } else if (action === 'add_recipe') {
+        endpoint = '/recipes';
+        method = 'POST';
+    } else if (action === 'update_recipe') {
+        endpoint = `/recipes/${id}`;
+        method = 'POST';
+        formData.append('_method', 'PUT');
+    } else if (action === 'delete_recipe') {
+        endpoint = `/recipes/${id}`;
+        method = 'POST';
+        formData.append('_method', 'DELETE');
+    } else if (action === 'toggle_favorite') {
+        endpoint = `/recipes/${id}/favorite`;
+        method = 'POST';
+        formData.append('_method', 'PATCH');
+    }
 
     const res = await fetch(endpoint, {
-        method: 'POST',
-        body: formData,
+        method: method === 'GET' ? 'GET' : 'POST',
+        body: method === 'GET' ? null : formData,
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
             'Accept': 'application/json',
         }
     });
 
-    // Allow 409 (duplicate) and 422 (Laravel validation error) through as JSON
     if (!res.ok && res.status !== 409 && res.status !== 422) {
         throw new Error(`HTTP ${res.status}`);
     }
 
     return res.json();
 }
-
 
 /* ── Scroll helper ───────────────────────────────────────────── */
 function scrollToSection(id) {
@@ -449,7 +473,14 @@ async function handleImageFile(file) {
     const fd = new FormData();
     fd.append('image', file);
     try {
-        const res = await fetch('Upload.php', { method: 'POST', body: fd });
+        const res = await fetch('/recipes/upload-image', {
+            method: 'POST',
+            body: fd,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'Accept': 'application/json',
+            }
+        });
         const data = await res.json();
         if (data.success) {
             document.getElementById('hiddenImagePath').value = data.image_path;
@@ -647,6 +678,10 @@ function handleLaravelErrors(responseData) {
             'description':  'recipeDesc',
             'ingredients':  'recipeIngredients',
             'instructions': 'recipeInstructions',
+            'calories':     null, 
+            'protein':      null,
+            'carbs':        null,
+            'fats':         null,
         };
 
         let firstField = null;

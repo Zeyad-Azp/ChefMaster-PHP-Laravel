@@ -39,3 +39,6 @@ Route::patch('/recipes/{recipe}/favorite', [RecipeController::class, 'toggleFavo
 
 // Full CRUD resource routes
 Route::resource('recipes', RecipeController::class);
+
+
+Route::post('/recipes/upload-image', [RecipeController::class, 'uploadImage']);
