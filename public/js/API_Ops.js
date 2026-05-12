@@ -4,10 +4,7 @@
  * Keys never touch the browser.
  * Now supports page-based pagination.
  */
-
-const ApiOps = (() => {
-
-    const API_ENDPOINT = 'API_Ops.php';
+    const API_Ops = (() => {
     const DB_ENDPOINT = 'DB_Ops.php';
 
     // ── Generic POST helper ──────────────────────────────────
@@ -21,21 +18,66 @@ const ApiOps = (() => {
     // @param query     string  — search keywords
     // @param searchType string — 'name' | 'ingredients'
     // @param page      number  — 1-based page number (default 1)
-    async function searchRecipes(query, searchType = 'name', page = 1) {
-        const fd = new FormData();
-        fd.append('action', 'search');
-        fd.append('query', query.trim());
-        fd.append('search_type', searchType);
-        fd.append('page', String(page));
-        return post(API_ENDPOINT, fd);
+   async function searchRecipes(query, searchType = 'name', page = 1) {
+
+    const offset = (page - 1) * 12;
+
+    const url = `/api/spoonacular/search?query=${encodeURIComponent(query)}&offset=${offset}`;
+
+    const res = await fetch(url);
+
+    const json = await res.json();
+
+    return json; // IMPORTANT
+}
+
+    function renderApiRecipes(recipes) {
+
+    const apiResults = document.getElementById('apiResults');
+
+    if (!recipes.length) {
+        apiResults.innerHTML = `
+            <div class="empty-state">
+                No recipes found.
+            </div>
+        `;
+        return;
     }
+
+    apiResults.innerHTML = `
+        <div class="recipes-grid">
+            ${recipes.map(recipe => `
+                <div class="recipe-card">
+                    <img
+                        src="${recipe.image}"
+                        alt="${recipe.title}"
+                        class="recipe-image"
+                    >
+
+                    <div class="recipe-card-body">
+                        <h3 class="recipe-title">
+                            ${recipe.title}
+                        </h3>
+
+                        <button
+                            class="btn btn-primary save-api-btn"
+                            data-id="${recipe.id}"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
 
     // ── Get full recipe detail from Spoonacular ──────────────
     async function getRecipeDetail(recipeId) {
         const fd = new FormData();
         fd.append('action', 'detail');
         fd.append('recipe_id', recipeId);
-        return post(API_ENDPOINT, fd);
+        return post('/api/spoonacular/detail', fd);
     }
 
     // ── Save an API recipe to the local DB ───────────────────

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\Api\SpoonacularController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,11 @@ use App\Http\Controllers\RecipeController;
 Route::get('/', function () {
     return view('index');
 })->name('home');
+
+
+Route::get('/api/spoonacular/search', [SpoonacularController::class, 'search'])
+    ->name('spoonacular.search');
+
 
 // AJAX JSON endpoints — defined BEFORE resource route so "api"
 // is not captured as a {recipe} parameter

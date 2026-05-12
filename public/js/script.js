@@ -678,7 +678,7 @@ function handleLaravelErrors(responseData) {
             'description':  'recipeDesc',
             'ingredients':  'recipeIngredients',
             'instructions': 'recipeInstructions',
-            'calories':     null, 
+            'calories':     null,
             'protein':      null,
             'carbs':        null,
             'fats':         null,
@@ -752,16 +752,15 @@ async function doApiSearch(page = 1) {
     const btn = document.getElementById('apiSearchBtn');
     results.innerHTML = `<div class="loading-wrap"><span class="spinner"></span> Searching…</div>`;
     if (btn) btn.disabled = true;
-
+    console.log('SEARCH STARTED');
     try {
-        const res = await ApiOps.searchRecipes(query, mode, page);
-        if (btn) btn.disabled = false;
-
-        if (!res.success) {
-            showToast(res.message || 'Search failed.', 'error');
+        const res = await API_Ops.searchRecipes(query, mode, page);
+        console.log(res);
+        if (!res || res.success === false) {
+            showToast(res?.message || 'Search failed.', 'error');
             results.innerHTML = '';
             return;
-        }
+}
 
         const items = res.data?.results || [];
         State.totalResults = res.data?.totalResults || 0;
@@ -882,10 +881,10 @@ async function openApiDetail(recipeId) {
     showLoadingModal();
     try {
         const res = await ApiOps.getRecipeDetail(recipeId);
-        if (!res.success) { 
-            closeModal(); 
-            showToast(res.message, 'error'); 
-            return; 
+        if (!res.success) {
+            closeModal();
+            showToast(res.message, 'error');
+            return;
         }
 
         // Check if already saved
@@ -893,14 +892,14 @@ async function openApiDetail(recipeId) {
         // DEBUGGING LINES
         console.log('alreadySaved:', alreadySaved);
         console.log('State.recipes:', State.recipes.map(r => r.api_recipe_id));
-        
-        
+
+
         const isFav = !!State.recipes.find(r => r.api_recipe_id == recipeId && +r.is_favorite);
 
         renderDetailModal(res.data, true, isFav, alreadySaved);
     } catch (e) { console.error(e);
-        closeModal(); 
-        showToast('Failed to load recipe details.', 'error'); 
+        closeModal();
+        showToast('Failed to load recipe details.', 'error');
     }
 }
 
@@ -922,10 +921,10 @@ async function openRecipeModal(id) {
         const isInCollection = !!State.recipes.find(r => r.id == id && r.source_type === 'api');
         renderDetailModal(res.data, false, isFav, isInCollection);
 
-    } catch (e) { 
+    } catch (e) {
         console.error(e);
-        closeModal(); 
-        showToast('Failed to load recipe.', 'error'); 
+        closeModal();
+        showToast('Failed to load recipe.', 'error');
     }
 }
 
@@ -1104,8 +1103,8 @@ async function toggleFav(id) {
             updateRecipesView();
             updateFavoritesView();
         }
-    } catch { 
-        showToast('Failed to update favourite.', 'error'); 
+    } catch {
+        showToast('Failed to update favourite.', 'error');
     }
 }
 
