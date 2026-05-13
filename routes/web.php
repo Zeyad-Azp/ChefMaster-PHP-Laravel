@@ -39,7 +39,8 @@ Route::get('/api/spoonacular/search', [SpoonacularController::class, 'search'])
 // is not captured as a {recipe} parameter
 Route::get('/recipes/api/list',      [RecipeController::class, 'apiList'])->name('recipes.api.list');
 Route::get('/recipes/api/favorites', [RecipeController::class, 'apiFavorites'])->name('recipes.api.favorites');
-
+Route::get('/api/spoonacular/detail', [SpoonacularController::class, 'detail']);
+Route::post('/api/spoonacular/save',  [SpoonacularController::class, 'save']);
 // Favorite toggle (AJAX — PATCH)
 Route::patch('/recipes/{recipe}/favorite', [RecipeController::class, 'toggleFavorite'])->name('recipes.favorite');
 

@@ -877,10 +877,9 @@ function apiCard(r) {
 ══════════════════════════════════════════════════════════════ */
 
 async function openApiDetail(recipeId) {
-    alert('openApiDetail called with: ' + recipeId); // temporary test
     showLoadingModal();
     try {
-        const res = await ApiOps.getRecipeDetail(recipeId);
+        const res = await API_Ops.getRecipeDetail(recipeId);
         if (!res.success) {
             closeModal();
             showToast(res.message, 'error');
@@ -958,7 +957,8 @@ function renderDetailModal(r, isApi, isFav = false, isInCollection = false) {
         </button>
 
         <button class="btn-fav btn-icon ${isFav ? 'active' : ''}"
-                onclick="toggleFav(${r.id})">
+                onclick="saveApiRecipe(${r.id}, this, 1)"
+                ${isInCollection && isFav ? 'disabled' : ''}>
             ${Icon.heart}
         </button>
     `
@@ -1117,13 +1117,13 @@ function editRecipe(id) {
 async function saveApiRecipe(recipeId, btn, isFavorite = 0) {
     if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spinner" style="width:14px;height:14px;border-width:2px;"></span>`; }
     try {
-        const detailRes = await ApiOps.getRecipeDetail(recipeId);
+        const detailRes = await API_Ops.getRecipeDetail(recipeId);
         if (!detailRes.success) {
             showToast(detailRes.message, 'error');
             if (btn) { btn.disabled = false; btn.innerHTML = isFavorite ? Icon.heart : Icon.save; }
             return;
         }
-        const saveRes = await ApiOps.saveApiRecipe(detailRes.data, isFavorite);
+        const saveRes = await API_Ops.saveApiRecipe(detailRes.data, isFavorite);
         if (saveRes.success) {
             State.recipes.unshift(saveRes.data);
             showToast(isFavorite ? 'Added to your Favourites!' : 'Saved to your collection!', 'success');
