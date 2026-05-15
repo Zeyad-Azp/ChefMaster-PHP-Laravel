@@ -113,7 +113,10 @@
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+<<<<<<< HEAD
     scroll-padding-top: calc(var(--header-h) + 12px);
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 }
 
 body {
@@ -292,6 +295,7 @@ h5 {
     color: var(--primary);
 }
 
+<<<<<<< HEAD
 /* ── User Menu Dropdown (Auth) ───────────────────────────── */
 .user-menu-container {
     position: relative;
@@ -399,6 +403,8 @@ h5 {
     margin: 4px 0;
 }
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 /* ── Layout ───────────────────────────────────────────────── */
 .app-main {
     max-width: 1320px;
@@ -1624,6 +1630,7 @@ textarea.form-control {
 }
 
 
+<<<<<<< HEAD
 /* ── Client-side validation error states ─────────────────── */
 .form-control.input-error,
 .auth-input.input-error,
@@ -1631,6 +1638,25 @@ textarea.form-control {
     border-color: #e74c3c !important;
     background-color: rgba(231, 76, 60, 0.05);
 }
+=======
+/* ── Client-side validation styles ──────────────────────────── */
+.form-control.input-error {
+    border-color: #e74c3c !important;
+    background-color: rgba(231, 76, 60, 0.05);
+}
+.field-error {
+    color: #e74c3c;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.field-error::before {
+    content: '⚠';
+}
+
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
 /* ── Footer ───────────────────────────────────────────────── */
 .site-footer {
@@ -1933,6 +1959,7 @@ textarea.form-control {
     .add-recipe-modal {
         width: 95vw;
     }
+<<<<<<< HEAD
 }
 
 /* ============================================================
@@ -2384,4 +2411,6 @@ textarea.form-control {
     border-right: 5px solid transparent;
     border-bottom: 8px solid #e74c3c;
     flex-shrink: 0;
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 }

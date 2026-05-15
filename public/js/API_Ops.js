@@ -5,6 +5,10 @@
  * Now supports page-based pagination.
  */
     const API_Ops = (() => {
+<<<<<<< HEAD
+=======
+    const DB_ENDPOINT = 'DB_Ops.php';
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
     // ── Generic POST helper ──────────────────────────────────
     async function post(endpoint, formData) {
@@ -20,6 +24,7 @@
    async function searchRecipes(query, searchType = 'name', page = 1) {
 
     const offset = (page - 1) * 12;
+<<<<<<< HEAD
     const mode = searchType === 'ingredients' ? 'ingredients' : 'name';
 
     const url = `/api/spoonacular/search?query=${encodeURIComponent(query)}&offset=${offset}&mode=${mode}`;
@@ -27,12 +32,62 @@
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+=======
+
+    const url = `/api/spoonacular/search?query=${encodeURIComponent(query)}&offset=${offset}`;
+
+    const res = await fetch(url);
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
     const json = await res.json();
 
     return json; // IMPORTANT
 }
 
+<<<<<<< HEAD
+=======
+    function renderApiRecipes(recipes) {
+
+    const apiResults = document.getElementById('apiResults');
+
+    if (!recipes.length) {
+        apiResults.innerHTML = `
+            <div class="empty-state">
+                No recipes found.
+            </div>
+        `;
+        return;
+    }
+
+    apiResults.innerHTML = `
+        <div class="recipes-grid">
+            ${recipes.map(recipe => `
+                <div class="recipe-card">
+                    <img
+                        src="${recipe.image}"
+                        alt="${recipe.title}"
+                        class="recipe-image"
+                    >
+
+                    <div class="recipe-card-body">
+                        <h3 class="recipe-title">
+                            ${recipe.title}
+                        </h3>
+
+                        <button
+                            class="btn btn-primary save-api-btn"
+                            data-id="${recipe.id}"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     // ── Get full recipe detail from Spoonacular ──────────────
     async function getRecipeDetail(recipeId) {
         const res = await fetch(`/api/spoonacular/detail?recipe_id=${recipeId}`, {
@@ -69,6 +124,22 @@
         if (!res.ok && res.status !== 409) throw new Error(`HTTP ${res.status}`);
         return res.json();
     }
+<<<<<<< HEAD
+=======
+    async function isFavorite(recipeId) {
+        const fd = new FormData();
+        fd.append('action', 'is_favorite');
+        fd.append('id', recipeId);
+
+        const res = await fetch('API_Ops.php', {
+            method: 'POST',
+            body: fd
+        });
+
+        return await res.json();
+    }
+
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     // Public API
     return { searchRecipes, getRecipeDetail, saveApiRecipe };
 

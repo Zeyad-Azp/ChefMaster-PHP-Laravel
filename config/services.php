@@ -35,6 +35,7 @@ return [
         ],
     ],
     'spoonacular' => [
+<<<<<<< HEAD
         // Default to the public Spoonacular endpoint so a missing env var
         // produces a clear "API key" error instead of a malformed-URL failure.
         'base_url' => env('SPOONACULAR_BASE_URL', 'https://api.spoonacular.com'),
@@ -42,5 +43,10 @@ return [
         // Comma-separated list of API keys for random rotation & quota balancing
         'keys'     => env('SPOONACULAR_API_KEYS'),
     ],
+=======
+    'base_url' => env('SPOONACULAR_BASE_URL'),
+    'key' => env('SPOONACULAR_API_KEY'),
+],
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
 ];

@@ -17,6 +17,8 @@ This project is a migration of the **ChefMaster** Single-Page Application (SPA) 
 
 ## 🛠️ Technical Stack
 *   **Framework:** Laravel 12.x
+=======
+*   **Framework:** Laravel 11.x
 *   **Language:** PHP 8.2+
 *   **Database:** SQLite (configured for submission)
 *   **Frontend:** Blade Templating Engine, CSS, and JavaScript

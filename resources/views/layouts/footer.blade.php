@@ -17,11 +17,17 @@
         <p class="footer-copy">&copy; {{ date('Y') }} ChefMaster. All rights reserved.</p>
 
         <div class="footer-links">
+<<<<<<< HEAD
             @auth
                 <a href="{{ route('recipes.create') }}">Add Recipe</a>
             @endauth
             <a href="{{ url('/') }}#sectionDiscover" onclick="handleNavClick(event, 'sectionDiscover')">Discover</a>
             <a href="{{ url('/') }}#sectionFavorites" onclick="handleNavClick(event, 'sectionFavorites')">Favourites</a>
+=======
+            <a href="#" onclick="openAddRecipeModal();return false;">Add Recipe</a>
+            <a href="#" onclick="scrollToSection('sectionDiscover');return false;">Discover</a>
+            <a href="#" onclick="scrollToSection('sectionFavorites');return false;">Favourites</a>
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         </div>
 
     </div>
@@ -29,4 +35,8 @@
 
 {{-- JavaScript --}}
 <script src="{{ asset('js/API_Ops.js') }}"></script>
+<<<<<<< HEAD
 <script src="{{ asset('js/script.js') }}"></script>
+=======
+<script src="{{ asset('js/script.js') }}"></script>
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a

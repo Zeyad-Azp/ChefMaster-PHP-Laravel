@@ -18,9 +18,15 @@ class UpdateRecipeRequest extends FormRequest
     public function rules(): array
     {
         return [
+<<<<<<< HEAD
             'title'        => 'sometimes|required|string|max:255',
             'ingredients'  => 'sometimes|required|string|max:5000',
             'instructions' => 'sometimes|required|string|max:10000',
+=======
+            'title'        => 'required|string|max:255',
+            'ingredients'  => 'required|string|max:5000',
+            'instructions' => 'required|string|max:10000',
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             'description'  => 'nullable|string|max:1000',
             'calories'     => 'nullable|numeric|min:0|max:99999',
             'protein'      => 'nullable|numeric|min:0|max:9999',
@@ -49,7 +55,11 @@ class UpdateRecipeRequest extends FormRequest
             'carbs.min'             => 'Carbs cannot be negative.',
             'fats.numeric'          => 'Fats must be a number.',
             'fats.min'              => 'Fats cannot be negative.',
+<<<<<<< HEAD
             'image_path.max'        => 'Image path is too long (max 500 characters).',
+=======
+            'image_path.max'        => 'Image URL is too long (max 500 characters).',
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         ];
     }
 }

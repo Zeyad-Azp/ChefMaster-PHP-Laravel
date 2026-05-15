@@ -15,7 +15,11 @@ class RecipeController extends Controller
      */
     public function index()
     {
+<<<<<<< HEAD
         $recipes = Recipe::where('user_id', auth()->id())->latest()->get();
+=======
+        $recipes = Recipe::latest()->get();
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         return view('recipes.index', compact('recipes'));
     }
 
@@ -31,17 +35,34 @@ class RecipeController extends Controller
     /**
      * Store a newly created recipe in the database.
      * Route: POST /recipes
+<<<<<<< HEAD
+=======
+     * T5 (M5): Validation handled by StoreRecipeRequest Form Request.
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
      */
     public function store(StoreRecipeRequest $request)
     {
         $validated = $request->validated();
 
+<<<<<<< HEAD
+=======
+        // Set defaults for nullable numeric fields
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         $validated['calories']    = $validated['calories']    ?? 0;
         $validated['protein']     = $validated['protein']     ?? 0;
         $validated['carbs']       = $validated['carbs']       ?? 0;
         $validated['fats']        = $validated['fats']        ?? 0;
+<<<<<<< HEAD
         $validated['source_type'] = 'manual';
         $validated['user_id']     = auth()->id();
+=======
+
+        // source_type defaults to 'manual' for user-created recipes
+        $validated['source_type'] = 'manual';
+
+        // TODO: Replace with auth()->id() when authentication is added
+        $validated['user_id'] = null;
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
         $recipe = Recipe::create($validated);
 
@@ -61,6 +82,7 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
+<<<<<<< HEAD
         // Enforce ownership for ALL request types (web and AJAX)
         if ($recipe->user_id !== auth()->id()) {
             if (request()->wantsJson() || request()->ajax()) {
@@ -69,13 +91,18 @@ class RecipeController extends Controller
             abort(403);
         }
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         if (request()->wantsJson() || request()->ajax()) {
             return response()->json([
                 'success' => true,
                 'data'    => $recipe,
             ]);
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         return view('recipes.show', compact('recipe'));
     }
 
@@ -85,15 +112,19 @@ class RecipeController extends Controller
      */
     public function edit(Recipe $recipe)
     {
+<<<<<<< HEAD
         if ($recipe->user_id !== auth()->id()) {
             abort(403);
         }
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         return view('recipes.edit', compact('recipe'));
     }
 
     /**
      * Update the specified recipe in the database.
      * Route: PUT /recipes/{recipe}
+<<<<<<< HEAD
      */
     public function update(UpdateRecipeRequest $request, Recipe $recipe)
     {
@@ -104,6 +135,12 @@ class RecipeController extends Controller
             abort(403);
         }
 
+=======
+     * T5 (M5): Validation handled by UpdateRecipeRequest Form Request.
+     */
+    public function update(UpdateRecipeRequest $request, Recipe $recipe)
+    {
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         $validated = $request->validated();
         $recipe->update($validated);
 
@@ -123,6 +160,7 @@ class RecipeController extends Controller
      */
     public function destroy(Request $request, Recipe $recipe)
     {
+<<<<<<< HEAD
         if ($recipe->user_id !== auth()->id()) {
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
@@ -130,6 +168,8 @@ class RecipeController extends Controller
             abort(403);
         }
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         $recipe->delete();
 
         if ($request->wantsJson() || $request->ajax()) {
@@ -144,6 +184,7 @@ class RecipeController extends Controller
     /**
      * Toggle the is_favorite status of a recipe.
      * Route: PATCH /recipes/{recipe}/favorite
+<<<<<<< HEAD
      */
     public function toggleFavorite(Recipe $recipe)
     {
@@ -151,6 +192,12 @@ class RecipeController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
         }
 
+=======
+     * Used by AJAX calls from the frontend JS (M7)
+     */
+    public function toggleFavorite(Recipe $recipe)
+    {
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         $recipe->update(['is_favorite' => !$recipe->is_favorite]);
 
         return response()->json([
@@ -163,12 +210,20 @@ class RecipeController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * Return current user's recipes as JSON.
+=======
+     * Return all recipes as JSON — used by frontend AJAX (M7).
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
      * Route: GET /recipes/api/list
      */
     public function apiList()
     {
+<<<<<<< HEAD
         $recipes = Recipe::where('user_id', auth()->id())->latest()->get();
+=======
+        $recipes = Recipe::latest()->get();
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
         return response()->json([
             'success' => true,
@@ -177,15 +232,23 @@ class RecipeController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * Return current user's favorites as JSON.
+=======
+     * Return favorites as JSON — used by frontend AJAX (M7).
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
      * Route: GET /recipes/api/favorites
      */
     public function apiFavorites()
     {
+<<<<<<< HEAD
         $favorites = Recipe::where('user_id', auth()->id())
                            ->where('is_favorite', true)
                            ->latest()
                            ->get();
+=======
+        $favorites = Recipe::where('is_favorite', true)->latest()->get();
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
         return response()->json([
             'success' => true,

@@ -41,7 +41,11 @@
 
                     {{-- Favorite button --}}
                     <button id="favBtn"
+<<<<<<< HEAD
                             onclick="toggleShowFav({{ $recipe->id }})"
+=======
+                            onclick="toggleFav({{ $recipe->id }})"
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
                             style="padding:10px 18px;border-radius:30px;border:1px solid var(--border);background:var(--surface-hover);cursor:pointer;font-size:1.2rem;"
                             title="{{ $recipe->is_favorite ? 'Remove from favorites' : 'Add to favorites' }}">
                         {{ $recipe->is_favorite ? '❤️' : '🤍' }}
@@ -105,9 +109,14 @@
 </main>
 
 <script>
+<<<<<<< HEAD
 // AJAX favorite toggle — scoped to the show page so it doesn't collide
 // with the global toggleFav() defined in script.js (loaded by the footer).
 async function toggleShowFav(id) {
+=======
+// AJAX favorite toggle — works with M7 JS (T7)
+async function toggleFav(id) {
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
         const res = await fetch(`/recipes/${id}/favorite`, {
@@ -120,9 +129,13 @@ async function toggleShowFav(id) {
         });
         const data = await res.json();
         if (data.success) {
+<<<<<<< HEAD
             const btn = document.getElementById('favBtn');
             btn.textContent = data.is_favorite ? '❤️' : '🤍';
             btn.title = data.is_favorite ? 'Remove from favorites' : 'Add to favorites';
+=======
+            document.getElementById('favBtn').textContent = data.is_favorite ? '❤️' : '🤍';
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         }
     } catch (err) {
         console.error('Could not toggle favorite:', err);

@@ -5,18 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\Log;
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
 class SpoonacularController extends Controller
 {
     protected string $baseUrl;
+<<<<<<< HEAD
 
     /** @var string[] All available API keys */
     protected array $apiKeys;
+=======
+    protected string $apiKey;
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
     public function __construct()
     {
         $this->baseUrl = config('services.spoonacular.base_url');
+<<<<<<< HEAD
 
         // Load multiple keys from comma-separated env, fallback to single key
         $multiKeys = config('services.spoonacular.keys');
@@ -78,14 +86,22 @@ class SpoonacularController extends Controller
         // All keys exhausted — return last response (402)
         Log::error('SpoonacularController: All API keys exhausted (402 on all).');
         return $response ?? Http::get($url, $params);
+=======
+        $this->apiKey = config('services.spoonacular.key');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     }
 
     public function search(Request $request)
     {
         try {
+<<<<<<< HEAD
             $query  = $request->query('query');
             $offset = (int) $request->query('offset', 0);
             $mode   = $request->query('mode', 'name') === 'ingredients' ? 'ingredients' : 'name';
+=======
+            $query = $request->query('query');
+            $offset = (int) $request->query('offset', 0);
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
             if (!$query) {
                 return response()->json([
@@ -94,6 +110,7 @@ class SpoonacularController extends Controller
                 ], 400);
             }
 
+<<<<<<< HEAD
             $params = [
                 'offset'               => $offset,
                 'number'               => 12,
@@ -112,6 +129,17 @@ class SpoonacularController extends Controller
             }
 
             $response = $this->apiGet($this->baseUrl . '/recipes/complexSearch', $params);
+=======
+            $response = Http::get(
+                $this->baseUrl . '/recipes/complexSearch',
+                [
+                    'apiKey' => $this->apiKey,
+                    'query' => $query,
+                    'offset' => $offset,
+                    'number' => 12,
+                ]
+            );
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
             if ($response->failed()) {
                 return response()->json([
@@ -120,6 +148,7 @@ class SpoonacularController extends Controller
                 ], $response->status());
             }
 
+<<<<<<< HEAD
             $raw = $response->json();
 
             // Flatten nutrition data for each result so the frontend gets simple fields
@@ -147,6 +176,17 @@ class SpoonacularController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred. Please try again.',
+=======
+            return response()->json([
+                'success' => true,
+                'data' => $response->json()
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error',
+                'error' => $e->getMessage()
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             ], 500);
         }
     }
@@ -156,6 +196,7 @@ class SpoonacularController extends Controller
         try {
             $recipeId = $request->query('recipe_id');
 
+<<<<<<< HEAD
             // Bug fix: validate that recipe_id is a positive integer to prevent SSRF / path injection
             if (!$recipeId || !ctype_digit((string) $recipeId) || (int) $recipeId < 1) {
                 return response()->json([
@@ -167,6 +208,21 @@ class SpoonacularController extends Controller
             $response = $this->apiGet(
                 $this->baseUrl . '/recipes/' . (int) $recipeId . '/information',
                 ['includeNutrition' => true]
+=======
+            if (!$recipeId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'recipe_id is required'
+                ], 400);
+            }
+
+            $response = Http::get(
+                $this->baseUrl . '/recipes/' . $recipeId . '/information',
+                [
+                    'apiKey'            => $this->apiKey,
+                    'includeNutrition'  => true,
+                ]
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             );
 
             if ($response->failed()) {
@@ -178,6 +234,7 @@ class SpoonacularController extends Controller
 
             $raw = $response->json();
 
+<<<<<<< HEAD
             // Spoonacular should always return at least id+title for a valid lookup;
             // bail out with 502 (bad upstream response) if either is missing.
             if (!is_array($raw) || empty($raw['id']) || empty($raw['title'])) {
@@ -187,6 +244,8 @@ class SpoonacularController extends Controller
                 ], 502);
             }
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             // Flatten nutrition so the frontend gets simple fields
             $nutrients = collect($raw['nutrition']['nutrients'] ?? []);
             $get = fn($name) => $nutrients->firstWhere('name', $name)['amount'] ?? 0;
@@ -214,16 +273,24 @@ class SpoonacularController extends Controller
             ]);
 
         } catch (\Throwable $e) {
+<<<<<<< HEAD
             Log::error('SpoonacularController@detail error', ['exception' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred. Please try again.',
+=======
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error',
+                'error'   => $e->getMessage()
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             ], 500);
         }
     }
 
     public function save(Request $request)
     {
+<<<<<<< HEAD
         try {
             // Bug fix: api_recipe_id must be a positive integer (Spoonacular IDs are always numeric)
             $request->validate([
@@ -256,6 +323,18 @@ class SpoonacularController extends Controller
                     ]);
                 }
 
+=======
+        //return response()->json(['debug' => 'hit', 'data' => $request->all()]);
+        try {
+            $request->validate([
+                'api_recipe_id' => 'required',
+                'title'         => 'required|string|max:255',
+            ]);
+
+            // Prevent duplicates
+            $exists = \App\Models\Recipe::where('api_recipe_id', $request->api_recipe_id)->first();
+            if ($exists) {
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
                 return response()->json([
                     'success' => false,
                     'message' => 'Recipe already saved to your collection.'
@@ -275,7 +354,11 @@ class SpoonacularController extends Controller
                 'image_path'    => $request->image_path    ?? null,
                 'is_favorite'   => $request->is_favorite   ?? 0,
                 'source_type'   => 'api',
+<<<<<<< HEAD
                 'user_id'       => auth()->id(),
+=======
+                'user_id'       => null,
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             ]);
 
             return response()->json([
@@ -291,10 +374,17 @@ class SpoonacularController extends Controller
                 'errors'  => $e->errors()
             ], 422);
         } catch (\Throwable $e) {
+<<<<<<< HEAD
             Log::error('SpoonacularController@save error', ['exception' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred. Please try again.',
+=======
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error',
+                'error'   => $e->getMessage()
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             ], 500);
         }
     }

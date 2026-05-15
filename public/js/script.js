@@ -123,6 +123,7 @@ async function dbPost(formData, url = null) {
         }
     });
 
+<<<<<<< HEAD
     // Auth-redirect: return the body so callers can react instead of
     // throwing a generic "Network error". For action requests, schedule a
     // redirect to the login page; read-only fetches stay silent.
@@ -137,6 +138,8 @@ async function dbPost(formData, url = null) {
         return { success: false, message, redirect };
     }
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     if (!res.ok && res.status !== 409 && res.status !== 422) {
         throw new Error(`HTTP ${res.status}`);
     }
@@ -144,6 +147,7 @@ async function dbPost(formData, url = null) {
     return res.json();
 }
 
+<<<<<<< HEAD
 /* ── Scroll helper & Cross-Page Nav ──────────────────────────── */
 window.handleNavClick = function(e, id) {
     // If we are already on the homepage, prevent default and smooth scroll
@@ -156,6 +160,9 @@ window.handleNavClick = function(e, id) {
     // Otherwise, let the anchor tag naturally navigate to /#id
 };
 
+=======
+/* ── Scroll helper ───────────────────────────────────────────── */
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 function scrollToSection(id) {
     const el = document.getElementById(id);
     if (el) {
@@ -190,11 +197,14 @@ function initScrollObserver() {
 ══════════════════════════════════════════════════════════════ */
 
 async function initAllSections() {
+<<<<<<< HEAD
     // Skip SPA bootstrap on pages that don't expose the dashboard layout
     // (e.g. login/register/edit views) — avoids a useless fetch + JSON
     // parse error from the auth-redirect HTML response.
     if (!document.getElementById('recipesGrid')) return;
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
    const recipesTitle = document.getElementById('recipesTitle');
     if (recipesTitle) {
         recipesTitle.innerHTML =
@@ -295,14 +305,18 @@ async function loadRecipes() {
     const grid = document.getElementById('recipesGrid');
     if (grid) grid.innerHTML = skeletonCards(6);
 
+<<<<<<< HEAD
     const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     try {
         const fd = new FormData();
         fd.append('action', 'get_recipes');
         const res = await dbPost(fd);
         if (res.success) {
             State.recipes = res.data || [];
+<<<<<<< HEAD
             updateRecipesView(activeFilter);
             updateFavoritesView();
         } else {
@@ -320,6 +334,15 @@ async function loadRecipes() {
         State.recipes = [];
         updateRecipesView(activeFilter);
         updateFavoritesView();
+=======
+            updateRecipesView('all');
+            updateFavoritesView();
+        } else {
+            showToast('Failed to load recipes.', 'error');
+        }
+    } catch {
+        showToast('Failed to load recipes.', 'error');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     }
 }
 
@@ -410,7 +433,12 @@ function openAddRecipeModal(recipe = null) {
         <div style="padding: 24px 32px 32px;">
             <form id="recipeForm" novalidate>
                 <input type="hidden" name="id" value="${editing ? recipe.id : ''}">
+<<<<<<< HEAD
                 <input type="hidden" name="image_path" id="hiddenImagePath" value="${editing ? escHtml(recipe.image_path || '') : ''}">
+=======
+                <input type="hidden" name="image_path" id="hiddenImagePath" value="${editing ? (recipe.image_path || '') : ''}">
+                <input type="hidden" name="keep_image" id="keepImage" value="${editing ? '1' : ''}">
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
                 <div class="form-group mb-4">
                     <label class="form-label" for="imageInput">Recipe Image</label>
@@ -497,7 +525,11 @@ function initImageUpload() {
 
 async function handleImageFile(file) {
     if (!file) return;
+<<<<<<< HEAD
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+=======
+    if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         showToast('Invalid format. Use JPG, PNG, or WebP.', 'error'); return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -525,6 +557,10 @@ async function handleImageFile(file) {
         const data = await res.json();
         if (data.success) {
             document.getElementById('hiddenImagePath').value = data.image_path;
+<<<<<<< HEAD
+=======
+            document.getElementById('keepImage').value = '';
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             showToast('Image uploaded.', 'success');
         } else {
             showToast(data.message || 'Upload failed.', 'error');
@@ -560,6 +596,7 @@ function validateRecipeForm(form) {
         isValid = false;
     }
 
+<<<<<<< HEAD
     // Helper: clear previous errors for an element looked up by `name`
     // (the macro inputs don't have IDs, so the ID-based clearError can't
     // reach them and stale errors used to accumulate across submits).
@@ -575,6 +612,12 @@ function validateRecipeForm(form) {
     ['recipeTitle', 'recipeDesc', 'recipeIngredients',
      'recipeInstructions'].forEach(clearError);
     ['calories', 'protein', 'carbs', 'fats'].forEach(clearErrorByName);
+=======
+    // Clear all previous errors first
+    ['recipeTitle', 'recipeDesc', 'recipeIngredients',
+     'recipeInstructions', 'recipeCalories', 'recipeProtein',
+     'recipeCarbs', 'recipeFats'].forEach(clearError);
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
     // ── Rule 1: Title is required, min 3 chars, max 100 chars
     const title = document.getElementById('recipeTitle');
@@ -584,26 +627,46 @@ function validateRecipeForm(form) {
         showError('recipeTitle', 'Recipe title is required.');
     } else if (titleVal.length < 3) {
         showError('recipeTitle', 'Title must be at least 3 characters.');
+<<<<<<< HEAD
     } else if (titleVal.length > 255) {
         showError('recipeTitle', 'Title must not exceed 255 characters.');
+=======
+    } else if (titleVal.length > 100) {
+        showError('recipeTitle', 'Title must not exceed 100 characters.');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     }
 
     // ── Rule 2: Description max 500 chars (optional but if filled)
     const desc = document.getElementById('recipeDesc');
+<<<<<<< HEAD
     if (desc && desc.value.trim().length > 1000) {
         showError('recipeDesc', 'Description must not exceed 1000 characters.');
+=======
+    if (desc && desc.value.trim().length > 500) {
+        showError('recipeDesc', 'Description must not exceed 500 characters.');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     }
 
     // ── Rule 3: Ingredients max 2000 chars (optional but if filled)
     const ingredients = document.getElementById('recipeIngredients');
+<<<<<<< HEAD
     if (ingredients && ingredients.value.trim().length > 5000) {
         showError('recipeIngredients', 'Ingredients must not exceed 5000 characters.');
+=======
+    if (ingredients && ingredients.value.trim().length > 2000) {
+        showError('recipeIngredients', 'Ingredients must not exceed 2000 characters.');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     }
 
     // ── Rule 4: Instructions max 5000 chars (optional but if filled)
     const instructions = document.getElementById('recipeInstructions');
+<<<<<<< HEAD
     if (instructions && instructions.value.trim().length > 10000) {
         showError('recipeInstructions', 'Instructions must not exceed 10000 characters.');
+=======
+    if (instructions && instructions.value.trim().length > 5000) {
+        showError('recipeInstructions', 'Instructions must not exceed 5000 characters.');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     }
 
     // ── Rule 5: Nutrition fields — must be non-negative numbers if filled
@@ -680,6 +743,10 @@ async function handleRecipeSubmit(e) {
         fd.append(k, form.elements[k]?.value || '');
     });
     fd.append('image_path', form.elements['image_path'].value);
+<<<<<<< HEAD
+=======
+    if (form.elements['keep_image'].value) fd.append('keep_image', '1');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
     try {
         const res = await dbPost(fd);
@@ -695,12 +762,18 @@ async function handleRecipeSubmit(e) {
             updateRecipesView('all');
             updateFavoritesView();
         } else {
+<<<<<<< HEAD
             // Use handleLaravelErrors to show field-level errors (e.g. 422 validation)
             if (!handleLaravelErrors(res)) {
                 showToast(res.message || 'Failed to save recipe.', 'error');
             }
             btn.disabled = false;
             btn.innerHTML = `${Icon.save}&nbsp;${id ? 'Save Changes' : 'Add Recipe'}`;
+=======
+            showToast(res.message || 'Failed to save recipe.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = `${Icon.save}&nbsp;Save`;
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         }
     } catch {
         showToast('Network error. Please try again.', 'error');
@@ -786,6 +859,10 @@ async function doApiSearch(page = 1) {
     const mode = (page === 1 ? modeEl?.value : State.lastMode) || 'name';
 
     if (!query) {
+<<<<<<< HEAD
+=======
+        const input = document.getElementById('apiSearchInput');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         if (input) {
             input.classList.add('input-error');
             input.focus();
@@ -804,8 +881,15 @@ async function doApiSearch(page = 1) {
     const btn = document.getElementById('apiSearchBtn');
     results.innerHTML = `<div class="loading-wrap"><span class="spinner"></span> Searching…</div>`;
     if (btn) btn.disabled = true;
+<<<<<<< HEAD
     try {
         const res = await API_Ops.searchRecipes(query, mode, page);
+=======
+    console.log('SEARCH STARTED');
+    try {
+        const res = await API_Ops.searchRecipes(query, mode, page);
+        console.log(res);
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         if (!res || res.success === false) {
             showToast(res?.message || 'Search failed.', 'error');
             results.innerHTML = '';
@@ -814,10 +898,15 @@ async function doApiSearch(page = 1) {
 
         const items = res.data?.results || [];
         State.totalResults = res.data?.totalResults || 0;
+<<<<<<< HEAD
         // Spoonacular returns totalResults but NOT totalPages/currentPage.
         // We calculate them ourselves from perPage and the requested page.
         State.totalPages = Math.ceil(State.totalResults / State.perPage) || 1;
         State.currentPage = page;
+=======
+        State.totalPages = res.data?.totalPages || 1;
+        State.currentPage = res.data?.currentPage || page;
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
         if (!items.length) {
             results.innerHTML = emptyState('No results found', `Try different keywords for "${escHtml(query)}".`);
@@ -837,9 +926,12 @@ async function doApiSearch(page = 1) {
             ${buildPagination(State.currentPage, State.totalPages)}
         `;
 
+<<<<<<< HEAD
         // Re-enable search button after successful render
         if (btn) btn.disabled = false;
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         // Scroll to results
         results.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -896,11 +988,16 @@ function buildPagination(current, total) {
     return html;
 }
 
+<<<<<<< HEAD
+=======
+/* ── API Card ─────────────────────────────────────────────────── */
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 function apiCard(r) {
     const imgHtml = r.image
         ? `<img src="${escHtml(r.image)}" alt="${escHtml(r.title)}" loading="lazy">`
         : `<div class="recipe-img-placeholder">${Icon.image}</div>`;
 
+<<<<<<< HEAD
     // Nutrition data is now always included from the API search response
     const macrosHtml = `<div class="recipe-macros">
             <div class="macro-item"><div class="macro-val">${fmt(r.calories)}</div><div class="macro-key">kcal</div></div>
@@ -909,6 +1006,8 @@ function apiCard(r) {
             <div class="macro-item"><div class="macro-val">${fmt(r.fats)}g</div><div class="macro-key">Fats</div></div>
        </div>`;
 
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
     return `<div class="recipe-card api-card">
         <div class="recipe-img-wrap" onclick="openApiDetail(${r.id})" role="button" tabindex="0" aria-label="View ${escHtml(r.title)}">
             ${imgHtml}
@@ -916,9 +1015,20 @@ function apiCard(r) {
         </div>
         <div class="recipe-body">
             <div class="recipe-title" onclick="openApiDetail(${r.id})" role="button" tabindex="0">${escHtml(r.title)}</div>
+<<<<<<< HEAD
             ${macrosHtml}
             <div style="display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:.8rem;margin-bottom:12px;">
                 ${Icon.clock}&nbsp;${r.readyInMinutes || '\u2014'} min
+=======
+            <div class="recipe-macros">
+                <div class="macro-item"><div class="macro-val">${fmt(r.calories)}</div><div class="macro-key">kcal</div></div>
+                <div class="macro-item"><div class="macro-val">${fmt(r.protein)}g</div><div class="macro-key">Protein</div></div>
+                <div class="macro-item"><div class="macro-val">${fmt(r.carbs)}g</div><div class="macro-key">Carbs</div></div>
+                <div class="macro-item"><div class="macro-val">${fmt(r.fats)}g</div><div class="macro-key">Fats</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:.8rem;margin-bottom:12px;">
+                ${Icon.clock}&nbsp;${r.readyInMinutes || '—'} min
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;">
                 <button class="btn btn-sm btn-outline" onclick="openApiDetail(${r.id})">${Icon.eye}&nbsp;View</button>
@@ -945,6 +1055,14 @@ async function openApiDetail(recipeId) {
 
         // Check if already saved
         const alreadySaved = !!State.recipes.find(r => r.api_recipe_id == recipeId);
+<<<<<<< HEAD
+=======
+        // DEBUGGING LINES
+        console.log('alreadySaved:', alreadySaved);
+        console.log('State.recipes:', State.recipes.map(r => r.api_recipe_id));
+
+
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         const isFav = !!State.recipes.find(r => r.api_recipe_id == recipeId && +r.is_favorite);
 
         renderDetailModal(res.data, true, isFav, alreadySaved);
@@ -965,8 +1083,16 @@ async function openRecipeModal(id) {
 
 
         const found = State.recipes.find(r => r.id == id);
+<<<<<<< HEAD
         const isFav = !!found?.is_favorite;
         const isInCollection = !!found && found.source_type === 'api';
+=======
+        console.log('Recipe found in state:', found);        // check this
+        console.log('is_favorite value:', found?.is_favorite); // check this
+
+        const isFav = !!State.recipes.find(r => r.id == id)?.is_favorite;
+        const isInCollection = !!State.recipes.find(r => r.id == id && r.source_type === 'api');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         renderDetailModal(res.data, false, isFav, isInCollection);
 
     } catch (e) {
@@ -1017,6 +1143,15 @@ function renderDetailModal(r, isApi, isFav = false, isInCollection = false) {
             ${Icon.heart}
         </button>
 
+<<<<<<< HEAD
+=======
+        <button class="btn ${isInCollection ? 'btn-outline' : 'btn-primary'}"
+                onclick="saveApiRecipe(${r.id}, this, 0)"
+                ${isInCollection ? 'disabled' : ''}>
+            ${isInCollection ? '✓ Saved' : 'Add to Collection'}
+        </button>
+
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
         ${r.source_type === 'manual'
             ? `<button class="btn btn-primary btn-sm" onclick="closeModal();editRecipe(${r.id})">
                 ${Icon.edit}&nbsp;Edit Recipe
@@ -1143,7 +1278,11 @@ async function toggleFav(id) {
                 heartBtn.classList.toggle('active', isFav);
             }
 
+<<<<<<< HEAD
             updateRecipesView(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
+=======
+            updateRecipesView();
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             updateFavoritesView();
         }
     } catch {
@@ -1167,6 +1306,7 @@ async function saveApiRecipe(recipeId, btn, isFavorite = 0) {
             return;
         }
         const saveRes = await API_Ops.saveApiRecipe(detailRes.data, isFavorite);
+<<<<<<< HEAD
 
         // Handle not-logged-in (401)
         if (saveRes.redirect) {
@@ -1184,12 +1324,20 @@ async function saveApiRecipe(recipeId, btn, isFavorite = 0) {
             } else {
                 State.recipes.unshift(saveRes.data);
             }
+=======
+        if (saveRes.success) {
+            State.recipes.unshift(saveRes.data);
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             showToast(isFavorite ? 'Added to your Favourites!' : 'Saved to your collection!', 'success');
             updateRecipesView('all');
             updateFavoritesView();
             if (btn) { btn.disabled = true; btn.innerHTML = `${Icon.check}`; }
         } else {
+<<<<<<< HEAD
             // 409 means already saved and no upgrade needed — not a real error
+=======
+            // 409 means already saved — not a real error
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
             if (saveRes.message?.includes('already saved')) {
                 showToast('Already in your collection!', 'info');
                 if (btn) { btn.disabled = true; btn.innerHTML = `${Icon.check}&nbsp;Saved`; }
@@ -1208,7 +1356,11 @@ async function saveApiRecipe(recipeId, btn, isFavorite = 0) {
 function escHtml(str) {
     const d = document.createElement('div');
     d.textContent = String(str || '');
+<<<<<<< HEAD
     return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+=======
+    return d.innerHTML;
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 }
 function fmt(n) {
     const v = parseFloat(n);
@@ -1253,6 +1405,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initAllSections();
     initScrollObserver();
+<<<<<<< HEAD
 
     // User Dropdown Logic
     const userMenuBtn = document.getElementById('userMenuBtn');
@@ -1272,4 +1425,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+=======
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 });

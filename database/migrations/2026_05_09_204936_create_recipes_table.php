@@ -12,7 +12,11 @@ return new class extends Migration {
     {
         Schema::create('my_recipes', function (Blueprint $table) {
             $table->id();
+<<<<<<< HEAD
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+=======
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+>>>>>>> e1b21b8101c145ef6af786483709267652d41b6a
 
             $table->string('title');
             $table->text('description')->nullable();
